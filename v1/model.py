@@ -16,7 +16,7 @@ class Network:
         self.global_step = tf.Variable(0, trainable=False)
         self.train = tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate).minimize(self.loss,
                                                                                                   self.global_step)
-
+        # remember tf.argmax(xxx, 1) because of the batch size dimension
         predict = tf.equal(tf.argmax(self.y, 1), tf.argmax(self.label, 1))
         self.accuracy = tf.reduce_mean(tf.cast(predict, 'float'))
 

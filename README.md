@@ -1,40 +1,98 @@
 # MNIST
 
-参考文章
+## tensorboard
+> python3 -m tensorboard.main --logdir=./v1/log
 
-[1.tensorflow入门-mnist手写数字识别](https://geektutu.com/post/tensorflow-mnist-simplest.html)
-
-##tensorboard
-python3 -m tensorboard.main --logdir=./v1/log
-
-##dataset
+## dataset
 dataset is downloaded from http://yann.lecun.com/exdb/mnist/
 
 [数据集的格式](https://blog.csdn.net/wspba/article/details/54311566)  
 数据集是write('rb') 的file，然后还压缩了一下下，用gzip.GzipFile 打开
 文件头几位包含特殊用途  
-training set image file:
-offset  value  description  
-0000    2051   magic number  
-0004    60000  number of images  
-0008    28     number of rows  
-0012    28     number of columns  
-0016    ?      pixel  
-0017    ?      pixel  
+
+>Training set image file:  
+byte_offset value  description  
+0000        2051   magic number  
+0004        60000  number of images  
+0008        28     number of rows  
+0012        28     number of columns  
+0016        ?      pixel  
+0017        ?      pixel  
 ...
 
-training set label file:  
-offset  value  description  
-0000    2049   magic number  
-0004    60000  number of items  
-0008    ?      label  
-0009    ?      label  
+>training set label file:  
+byte_offset value  description  
+0000        2049   magic number  
+0004        60000  number of items  
+0008        ?      label  
+0009        ?      label  
 ...
 
-##note
+## note
+
 首先这是个多分类问题，0-9种数字，所以one-hot + [softmax](http://ufldl.stanford.edu/wiki/index.php/Softmax%E5%9B%9E%E5%BD%92)（可以理解为一个可导的函数，先由h函数归一化，再由J函数放大；用于表示互斥的多分类问题）  
-接着是网络结构，第一种尝试是先用一层的网络，即 W * x，其中W是模型参数，x是输入图像向量。
+然后是网络结构：
+
+### network v1: linear classifier (1-layer NN)
+
+先用一层的网络，即 W * x，其中W是模型参数，x是输入图像向量。
+> test set accuracy: 0.9213
+
+### network v2: Multi-layer networks (2-layer NN)
+
+#### 128 HU(hidden unit), cross-entropy
+输出层试了两种情况：
+1)用softmax, 128 HU(hidden unit), cross-entropy
+self.y = tf.nn.softmax(tf.matmul(self.h1, self.w2) + self.b2, name='output_layer')
+>step 120000 loss: 2.382  
+>     -> Training set error_rate: 0.0108  
+>     -> Test set error_rate: 0.0369  
+
+2)用softmax(sigmoid), 128 HU(hidden unit), cross-entropy
+self.h2 = tf.nn.sigmoid(tf.matmul(self.h1, self.w2) + self.b2)
+self.y = tf.nn.softmax(self.h2, name='output_layer')
+>step 120000 loss: 99.614  
+     -> Training set error_rate: 0.0591  
+     -> Test set error_rate: 0.0640  
+
+3)用sigmoid, 128 HU(hidden unit), cross-entropy
+self.y = tf.nn.sigmoid(tf.matmul(self.h1, self.w2) + self.b2)
+效果极差
+> step 120000 loss: 0.002  
+     -> Training set error_rate: 0.7979  
+     -> Test set error_rate: 0.7989  
+
+值得注意的是，网络里面的变量要用随机数初始化，不然无法收敛
+tf.Variable(tf.random_uniform([784, 128], -1, 1)  
+
+4)用softmax, 300 HU(hidden unit), cross-entropy
+> step 300000 loss: 0.128  
+     -> Training set error_rate: 0.0000  
+     -> Test set error_rate: 0.0304  
+     -> Test set error_rate: 0.0304  
+
+5)用softmax, 1000 HU, cross-entropy
+> step 150000 loss: 0.180207  
+     -> Training set error_rate: 0.000000  
+     -> Test set error_rate: 0.037500  
+
+6)用softmax, 300 HU, MSE
+
+
+这种网络的缺点：  
+1）对于要识别的手写体的大小、倾斜、图片中的位置等干扰不敏感  
+2）局部特征(local features)不明显  
+
+### network v3: convolutional neural networks
 
 
 
 
+
+---
+
+参考文章
+
+[1.tensorflow入门-mnist手写数字识别](https://geektutu.com/post/tensorflow-mnist-simplest.html)
+[2.Multi-column Deep Neural Networks for Image Classification](https://arxiv.org/pdf/1202.2745.pdf)  
+[3.Gradient-Based Learning Applied to Document Recognition](http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf)

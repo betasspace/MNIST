@@ -50,21 +50,21 @@ class Train:
             if step % save_interval == 0:
                 saver.save(self.sess, self.CKPT_DIR + '/model', global_step=step)
                 print('%s/model-%d saved' % (self.CKPT_DIR, step))
-                # self.calculate_accuracy()
+                self.calculate_accuracy()
 
-    # def calculate_accuracy(self):
-    #     test_x = self.data.test.images
-    #     test_label = self.data.test.labels
-    #
-    #     accuracy = self.sess.run(self.net.accuracy,
-    #                              feed_dict={
-    #                                  self.net.x: test_x,
-    #                                  self.net.label: test_label
-    #                              })
-    #     print("test set accuracy: %.4f,  total test case: %d" % (accuracy, len(test_label)))
+    def calculate_accuracy(self):
+        test_x = self.data.test.images
+        test_label = self.data.test.labels
+
+        accuracy = self.sess.run(self.net.accuracy,
+                                 feed_dict={
+                                     self.net.x: test_x,
+                                     self.net.label: test_label
+                                 })
+        print("test set accuracy: %.4f,  total test case: %d" % (accuracy, len(test_label)))
 
 
 if __name__ == "__main__":
     app = Train()
     app.train()
-    # app.calculate_accuracy()
+    app.calculate_accuracy()
