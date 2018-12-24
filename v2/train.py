@@ -9,7 +9,8 @@ class Train:
         self.CKPT_DIR = './ckpt6'
         self.net = Network()
 
-        self.sess = tf.Session()
+        self.sess = tf.Session(config=tf.ConfigProto(
+            allow_soft_placement=True, log_device_placement=True))
         self.sess.run(tf.global_variables_initializer())
 
         # print("pwd:", os.getcwd())
