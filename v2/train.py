@@ -1,13 +1,13 @@
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
-from v2.model import Network
+from v2.model import NetworkLayer3
 
 
 class Train:
     def __init__(self):
-        self.CKPT_DIR = './ckpt6'
-        self.net = Network()
+        self.CKPT_DIR = './ckpt7'
+        self.net = NetworkLayer3()
 
         self.sess = tf.Session(config=tf.ConfigProto(
             allow_soft_placement=True, log_device_placement=True))
@@ -18,9 +18,9 @@ class Train:
 
     def train(self):
         saver = tf.train.Saver(max_to_keep=20)
-        save_interval = 10000
+        save_interval = 20000
         batch_size = 64
-        train_step = 1000000
+        train_step = 1100000
         step = 0
 
         # # merge所有的summary node 的op
@@ -54,6 +54,7 @@ class Train:
             #     self.calculate_accuracy()
             if step % 2000 == 0:
                 print('step %d loss: %f' % (step, loss))
+            if step % 20000 == 0:
                 self.calculate_train_error()
                 self.calculate_test_error()
 

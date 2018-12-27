@@ -76,8 +76,14 @@ tf.Variable(tf.random_uniform([784, 128], -1, 1)
      -> Training set error_rate: 0.000000  
      -> Test set error_rate: 0.037500  
 
-6)用softmax, 300 HU, MSE
-
+6)用softmax, 300 HU, MSE (收敛很慢)
+> step 7000000 loss: 0.005344  
+     -> Training set error_rate: 0.003855  
+     -> Test set error_rate: 0.034500  
+     
+> step 10020000 loss: 0.000043  
+     -> Training set error_rate: 0.003836  
+     -> Test set error_rate: 0.034400  
 
 这种网络的缺点：  
 1）对于要识别的手写体的大小、倾斜、图片中的位置等干扰不敏感  
