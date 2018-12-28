@@ -40,8 +40,7 @@ byte_offset value  description
 
 ### network v2: Multi-layer networks (2-layer NN)
 
-#### 128 HU(hidden unit), cross-entropy
-输出层试了两种情况：
+#### 2-layer NN
 1)用softmax, 128 HU(hidden unit), cross-entropy
 self.y = tf.nn.softmax(tf.matmul(self.h1, self.w2) + self.b2, name='output_layer')
 >step 120000 loss: 2.382  
@@ -84,6 +83,19 @@ tf.Variable(tf.random_uniform([784, 128], -1, 1)
 > step 10020000 loss: 0.000043  
      -> Training set error_rate: 0.003836  
      -> Test set error_rate: 0.034400  
+
+#### 3-layer NN
+
+1)用softmax, 500 + 150 sigmoid HU, cross-entropy
+> step 500000 loss: 0.039671  
+     -> Training set error_rate: 0.000000  
+     -> Test set error_rate: 0.037700  
+
+1)用softmax, 500 + 150 ReLU HU, cross-entropy
+> tf.truncated_normal([], 0, 0.1)  
+> step 100000 loss: 0.019779  
+     -> Training set error_rate: 0.000000  
+     -> Test set error_rate: 0.019800    
 
 这种网络的缺点：  
 1）对于要识别的手写体的大小、倾斜、图片中的位置等干扰不敏感  
