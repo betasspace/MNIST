@@ -1,13 +1,13 @@
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
-from v2.model import NetworkLayer3WithReLU
+from v2.model import NetworkLayer3TruncatedNormal
 
 
 class Train:
     def __init__(self):
         self.CKPT_DIR = './ckpt9'
-        self.net = NetworkLayer3WithReLU()
+        self.net = NetworkLayer3TruncatedNormal()
 
         self.sess = tf.Session(config=tf.ConfigProto(
             allow_soft_placement=True, log_device_placement=True))

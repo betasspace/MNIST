@@ -1,7 +1,7 @@
 # MNIST
 
 ## tensorboard
-> python3 -m tensorboard.main --logdir=./v1/log
+`python3 -m tensorboard.main --logdir=./v1/log`
 
 ## dataset
 dataset is downloaded from http://yann.lecun.com/exdb/mnist/
@@ -10,23 +10,23 @@ dataset is downloaded from http://yann.lecun.com/exdb/mnist/
 数据集是write('rb') 的file，然后还压缩了一下下，用gzip.GzipFile 打开
 文件头几位包含特殊用途  
 
->Training set image file:  
-byte_offset value  description  
-0000        2051   magic number  
-0004        60000  number of images  
-0008        28     number of rows  
-0012        28     number of columns  
-0016        ?      pixel  
-0017        ?      pixel  
-...
+    Training set image file:  
+    byte_offset value  description  
+    0000        2051   magic number  
+    0004        60000  number of images  
+    0008        28     number of rows  
+    0012        28     number of columns  
+    0016        ?      pixel  
+    0017        ?      pixel  
+    ...
 
->training set label file:  
-byte_offset value  description  
-0000        2049   magic number  
-0004        60000  number of items  
-0008        ?      label  
-0009        ?      label  
-...
+    training set label file:  
+    byte_offset value  description  
+    0000        2049   magic number  
+    0004        60000  number of items  
+    0008        ?      label  
+    0009        ?      label  
+    ...
 
 ## note
 
@@ -42,62 +42,90 @@ byte_offset value  description
 
 #### 2-layer NN
 1)用softmax, 128 HU(hidden unit), cross-entropy
-self.y = tf.nn.softmax(tf.matmul(self.h1, self.w2) + self.b2, name='output_layer')
->step 120000 loss: 2.382  
->     -> Training set error_rate: 0.0108  
->     -> Test set error_rate: 0.0369  
-
+`self.y = tf.nn.softmax(tf.matmul(self.h1, self.w2) + self.b2, name='output_layer')`
+```
+step 120000 loss: 2.382  
+     -> Training set error_rate: 0.0108  
+     -> Test set error_rate: 0.0369  
+```
 2)用softmax(sigmoid), 128 HU(hidden unit), cross-entropy
+```
 self.h2 = tf.nn.sigmoid(tf.matmul(self.h1, self.w2) + self.b2)
 self.y = tf.nn.softmax(self.h2, name='output_layer')
->step 120000 loss: 99.614  
+```
+```
+step 120000 loss: 99.614  
      -> Training set error_rate: 0.0591  
      -> Test set error_rate: 0.0640  
-
+```
 3)用sigmoid, 128 HU(hidden unit), cross-entropy
-self.y = tf.nn.sigmoid(tf.matmul(self.h1, self.w2) + self.b2)
+`self.y = tf.nn.sigmoid(tf.matmul(self.h1, self.w2) + self.b2)`
 效果极差
-> step 120000 loss: 0.002  
+```
+step 120000 loss: 0.002  
      -> Training set error_rate: 0.7979  
      -> Test set error_rate: 0.7989  
-
-值得注意的是，网络里面的变量要用随机数初始化，不然无法收敛
-tf.Variable(tf.random_uniform([784, 128], -1, 1)  
+```
+- 值得注意的是，网络里面的变量要用随机数初始化，不然无法收敛
+`tf.Variable(tf.random_uniform([784, 128], -1, 1)`
+- 另外发现用以下随机数初始化，收敛更快，而且准确率会变高
+`tf.Variable(tf.truncated_normal(shape=[], 0, 0.1))`
 
 4)用softmax, 300 HU(hidden unit), cross-entropy
-> step 300000 loss: 0.128  
+```
+step 300000 loss: 0.128  
      -> Training set error_rate: 0.0000  
      -> Test set error_rate: 0.0304  
      -> Test set error_rate: 0.0304  
-
+```
 5)用softmax, 1000 HU, cross-entropy
-> step 150000 loss: 0.180207  
+```
+step 150000 loss: 0.180207  
      -> Training set error_rate: 0.000000  
      -> Test set error_rate: 0.037500  
-
+```
 6)用softmax, 300 HU, MSE (收敛很慢)
-> step 7000000 loss: 0.005344  
+```
+step 7000000 loss: 0.005344  
      -> Training set error_rate: 0.003855  
      -> Test set error_rate: 0.034500  
-     
-> step 10020000 loss: 0.000043  
+```
+```
+step 10020000 loss: 0.000043  
      -> Training set error_rate: 0.003836  
      -> Test set error_rate: 0.034400  
-
+```
 #### 3-layer NN
 
-1)用softmax, 500 + 150 sigmoid HU, cross-entropy
-> step 500000 loss: 0.039671  
+1)用softmax, 500 + 150 sigmoid HU, cross-entropy (best error_rate: 0.018500)
+```
+- step 500000 loss: 0.039671  
      -> Training set error_rate: 0.000000  
-     -> Test set error_rate: 0.037700  
-
-1)用softmax, 500 + 150 ReLU HU, cross-entropy
-> tf.truncated_normal([], 0, 0.1)  
-> step 100000 loss: 0.019779  
+     -> Test set error_rate: 0.037700
+```
+with `tf.truncated_normal([], 0, 0.1)`
+```
+step 120000 loss: 0.633766  
+     -> Training set error_rate: 0.001873  
+     -> Test set error_rate: 0.020600  
+```
+```
+step 280000 loss: 0.162379  
+     -> Training set error_rate: 0.000000  
+     -> Test set error_rate: 0.018500  
+```
+1)用softmax, 500 + 150 ReLU HU, cross-entropy (best error_rate: 0.019500)  
+收敛更快
+with `tf.truncated_normal([], 0, 0.1)`
+```
+step 100000 loss: 0.019779  
      -> Training set error_rate: 0.000000  
      -> Test set error_rate: 0.019800    
+```
+otherwise 几乎收敛极慢
 
-这种网络的缺点：  
+
+**全连接网络的缺点**：  
 1）对于要识别的手写体的大小、倾斜、图片中的位置等干扰不敏感  
 2）局部特征(local features)不明显  
 
@@ -111,6 +139,7 @@ tf.Variable(tf.random_uniform([784, 128], -1, 1)
 
 参考文章
 
-[1.tensorflow入门-mnist手写数字识别](https://geektutu.com/post/tensorflow-mnist-simplest.html)
-[2.Multi-column Deep Neural Networks for Image Classification](https://arxiv.org/pdf/1202.2745.pdf)  
-[3.Gradient-Based Learning Applied to Document Recognition](http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf)
+[1.tensorflow入门-mnist手写数字识别](https://geektutu.com/post/tensorflow-mnist-simplest.html)  
+[2.Gradient-Based Learning Applied to Document Recognition](http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf)  
+[3.Multi-column Deep Neural Networks for Image Classification](https://arxiv.org/pdf/1202.2745.pdf)  
+
