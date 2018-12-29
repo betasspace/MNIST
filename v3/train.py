@@ -34,43 +34,36 @@ class Train:
         self.sess.run(tf.global_variables_initializer())
 
     def train(self):
-        epochs = 100
+        epochs = 50
         num_examples = len(self.X_train)
 
         saver = tf.train.Saver(max_to_keep=5)
         save_interval = 10
-        ckpt = tf.train.get_checkpoint_state(self.CKPT_DIR)
-        if ckpt and ckpt.model_checkpoint_path:
-            print('ckpt.model_checkpoint_path:', ckpt.model_checkpoint_path)
-            saver.restore(self.sess, ckpt.model_checkpoint_path)
 
         for i in range(epochs):
             x_train, y_train = shuffle(self.X_train, self.Y_train)
             for offset in range(0, num_examples, BATCH_SIZE):
                 end = offset + BATCH_SIZE
                 x, y = x_train[offset:end], y_train[offset:end]
-                self.sess.run(self.net.train, feed_dict={
+                _, loss = self.sess.run([self.net.train, self.net.loss], feed_dict={
                     self.net.x: x,
                     self.net.label: y,
                 })
-            if i % save_interval == 0:
-                saver.save(self.sess, self.CKPT_DIR + '/model', global_step=i + 1)
-            error_rate = self.evaluate(self.X_validation, self.Y_validation)
+                # print("loss: ", loss)
+            if (i + 1) % save_interval == 0:
+                saver.save(self.sess, self.CKPT_DIR + '/model')
+            error_rate, test_loss = self.evaluate(self.X_validation, self.Y_validation)
             print("EPOCH {} ...".format(i + 1))
-            print('Validation error rate = {:.3f}\n'.format(error_rate))
-        test_error_rate = self.evaluate(self.X_train, self.Y_test)
-        print('\n\n-> Test error rate = {:.3f}\n'.format(test_error_rate))
+            print('Validation error rate = {:.3f}, test_loss = {:.3f}\n'.format(error_rate, test_loss))
+            test_error_rate, _ = self.evaluate(self.X_test, self.Y_test)
+            print('-> Test error rate = {:.3f}\n'.format(test_error_rate))
 
     def evaluate(self, x_data, y_data):
-        # sess = tf.get_default_session()
-        with tf.Session(config=tf.ConfigProto(
-                allow_soft_placement=True, log_device_placement=False)) as sess:
-            sess.run(tf.global_variables_initializer())
-            error_rate = sess.run(self.net.error_rate, feed_dict={
-                self.net.x: x_data,
-                self.net.label: y_data,
-            })
-        return error_rate
+        error_rate, loss = self.sess.run([self.net.error_rate, self.net.loss], feed_dict={
+            self.net.x: x_data,
+            self.net.label: y_data,
+        })
+        return error_rate, loss
 
 
 if __name__ == '__main__':
