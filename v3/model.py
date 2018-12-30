@@ -53,7 +53,7 @@ class LeNet5:
 
         # cross_entropy
         self.y = tf.nn.softmax(self.h7)
-        self.loss = -tf.reduce_sum(self.label * tf.log(self.y))
+        self.loss = -tf.reduce_sum(self.label * tf.log(self.y + 1e-10))
 
         # # or tf.nn.cross_entropy
         # self.loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.label,
