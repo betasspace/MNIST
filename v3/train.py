@@ -49,17 +49,15 @@ class Train:
                     self.net.x: x,
                     self.net.label: y,
                 })
-                # print("loss: ", loss)
-            if (i + 1) % save_interval == 0:
-                saver.save(self.sess, self.CKPT_DIR + '/model')
-                print('Model Saved.')
-            error_rate, test_loss = self.evaluate(self.X_validation, self.Y_validation)
+            error_rate, validation_loss = self.evaluate(self.X_validation, self.Y_validation)
             print("EPOCH {} ...".format(i + 1))
-            print('Validation error rate = {:.3f}, test_loss = {:.3f}\n'.format(error_rate, test_loss))
-            test_error_rate, _ = self.evaluate(self.X_test, self.Y_test)
-            print('-> Test error rate = {:.3f}\n'.format(test_error_rate))
-        saver.save(self.sess, self.CKPT_DIR + '/model')
-        print('Model Saved.')
+            print('Validation error rate = {:.5f}, Validation_loss = {:.5f}'.format(error_rate, validation_loss))
+            test_error_rate, test_loss = self.evaluate(self.X_test, self.Y_test)
+            print('-> Test error rate = {:.5f}, test_loss = {:.5f}'.format(test_error_rate, test_loss))
+            if (i + 1) % save_interval == 0:
+                saver.save(self.sess, self.CKPT_DIR + '/model_epochs_', global_step=i)
+                print('Model Saved.\n')
+
     def evaluate(self, x_data, y_data):
         error_rate, loss = self.sess.run([self.net.error_rate, self.net.loss], feed_dict={
             self.net.x: x_data,
