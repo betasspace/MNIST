@@ -70,6 +70,8 @@ step 120000 loss: 0.002
 `tf.Variable(tf.random_uniform([784, 128], -1, 1)`
 - 另外发现用以下随机数初始化，收敛更快，而且准确率会变高
 `tf.Variable(tf.truncated_normal(shape=[], 0, 0.1))`
+- 准确率变化的原因可以用 feature weight 大小解释，
+由于第一种初始化方式得出的feature weight 更大，所以更容易over fit
 
 4)用softmax, 300 HU(hidden unit), cross-entropy
 ```
@@ -131,6 +133,13 @@ otherwise 几乎收敛极慢
 
 ### network v3: convolutional neural networks
 
+LeNet5:
+`commit id: 7cbf8224b0ee81b9e579ff5b2f7db4362b1a797b`
+```
+EPOCH 50 ...
+Validation error rate = 0.00820, Validation_loss = 254.92041
+-> Test error rate = 0.00860
+```
 
 
 
