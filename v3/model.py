@@ -16,6 +16,7 @@ class LeNet5:
         # }
         self.x = tf.placeholder(tf.float32, [None, 32, 32, 1], name='input_x')
         self.label = tf.placeholder(tf.float32, [None, 10], name='label')
+        self.prob = tf.placeholder_with_default(1.0, shape=())
 
         self.conv1_f = tf.Variable(tf.truncated_normal(shape=[5, 5, 1, 6], mean=0, stddev=0.1))
         self.conv1_b = tf.Variable(tf.zeros(6))
@@ -30,7 +31,7 @@ class LeNet5:
         self.conv3 = tf.nn.relu(
             tf.nn.conv2d(self.pool2, self.conv3_f, strides=[1, 1, 1, 1], padding='VALID') + self.conv3_b)
         print(self.conv3.shape)
-        self.conv3 = tf.nn.dropout(self.conv3, 0.5)
+        self.conv3 = tf.nn.dropout(self.conv3, self.prob)
 
         self.pool4 = tf.nn.max_pool(self.conv3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
@@ -38,7 +39,7 @@ class LeNet5:
         self.conv5_b = tf.Variable(tf.zeros(120))
         self.conv5 = tf.nn.relu(
             tf.nn.conv2d(self.pool4, self.conv5_f, strides=[1, 1, 1, 1], padding='VALID') + self.conv5_b)
-        self.conv5 = tf.nn.dropout(self.conv5, 0.5)
+        self.conv5 = tf.nn.dropout(self.conv5, self.prob)
         print(self.conv5.shape)
         # # or full connect
         # self.w5 = tf.Variable(tf.truncated_normal(shape=[400, 120], mean=0, stddev=0.1))

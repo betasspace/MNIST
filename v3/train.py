@@ -12,6 +12,8 @@ parser.add_argument('--save_interval', type=int, default=10,
                     help='interval epochs of saver')
 parser.add_argument('--batch_size', type=int, default=64,
                     help='how many epochs should train.py run')
+parser.add_argument('--dropout_prob', type=float, default=0.5,
+                    help='how many epochs should train.py run')
 args = parser.parse_args()
 
 BATCH_SIZE = args.batch_size
@@ -58,6 +60,7 @@ class Train:
                 _, loss = self.sess.run([self.net.train, self.net.loss], feed_dict={
                     self.net.x: x,
                     self.net.label: y,
+                    self.net.prob: args.dropout_prob,
                 })
             error_rate, validation_loss = self.evaluate(self.X_validation, self.Y_validation)
             print("EPOCH {} ...".format(i + 1))
@@ -72,6 +75,7 @@ class Train:
         error_rate, loss = self.sess.run([self.net.error_rate, self.net.loss], feed_dict={
             self.net.x: x_data,
             self.net.label: y_data,
+            self.net.prob: 1.0,
         })
         return error_rate, loss
 
