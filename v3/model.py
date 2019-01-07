@@ -46,6 +46,7 @@ class LeNet5:
         self.w6 = tf.Variable(tf.truncated_normal(shape=[120, 84], mean=0, stddev=0.1))
         self.b6 = tf.Variable(tf.zeros(84))
         self.h6 = tf.nn.relu(tf.matmul(flatten(self.conv5), self.w6) + self.b6)
+        self.h6 = tf.nn.dropout(self.h6, 0.5)
 
         self.w7 = tf.Variable(tf.truncated_normal(shape=[84, 10], mean=0, stddev=0.1))
         self.b7 = tf.Variable(tf.zeros(10))
