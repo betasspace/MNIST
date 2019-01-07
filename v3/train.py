@@ -3,8 +3,18 @@ import numpy as np
 from v3.model import LeNet5
 import tensorflow as tf
 from sklearn.utils import shuffle
+import argparse
 
-BATCH_SIZE = 64
+parser = argparse.ArgumentParser()
+parser.add_argument('--epochs', type=int, default=10,
+                    help='how many epochs should train.py run')
+parser.add_argument('--save_interval', type=int, default=10,
+                    help='interval epochs of saver')
+parser.add_argument('--batch_size', type=int, default=64,
+                    help='how many epochs should train.py run')
+args = parser.parse_args()
+
+BATCH_SIZE = args.batch_size
 
 
 class Train:
@@ -34,11 +44,11 @@ class Train:
         self.sess.run(tf.global_variables_initializer())
 
     def train(self):
-        epochs = 50
+        epochs = args.epochs
         num_examples = len(self.X_train)
 
         saver = tf.train.Saver(max_to_keep=5)
-        save_interval = 10
+        save_interval = args.save_interval
 
         for i in range(epochs):
             x_train, y_train = shuffle(self.X_train, self.Y_train)
