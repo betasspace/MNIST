@@ -30,6 +30,7 @@ class LeNet5:
         self.conv3 = tf.nn.relu(
             tf.nn.conv2d(self.pool2, self.conv3_f, strides=[1, 1, 1, 1], padding='VALID') + self.conv3_b)
         print(self.conv3.shape)
+        self.conv3 = tf.nn.dropout(self.conv3, 0.5)
 
         self.pool4 = tf.nn.max_pool(self.conv3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
@@ -37,18 +38,18 @@ class LeNet5:
         self.conv5_b = tf.Variable(tf.zeros(120))
         self.conv5 = tf.nn.relu(
             tf.nn.conv2d(self.pool4, self.conv5_f, strides=[1, 1, 1, 1], padding='VALID') + self.conv5_b)
+        self.conv5 = tf.nn.dropout(self.conv5, 0.5)
         print(self.conv5.shape)
         # # or full connect
         # self.w5 = tf.Variable(tf.truncated_normal(shape=[400, 120], mean=0, stddev=0.1))
         # self.b5 = tf.Variable(tf.zero(120))
         # self.h5 = tf.nn.relu(tf.matmul(flatten(self.pool4), self.w5) + self.b5)
 
-        self.w6 = tf.Variable(tf.truncated_normal(shape=[120, 200], mean=0, stddev=0.1))
-        self.b6 = tf.Variable(tf.zeros(200))
+        self.w6 = tf.Variable(tf.truncated_normal(shape=[120, 84], mean=0, stddev=0.1))
+        self.b6 = tf.Variable(tf.zeros(84))
         self.h6 = tf.nn.relu(tf.matmul(flatten(self.conv5), self.w6) + self.b6)
-        self.h6 = tf.nn.dropout(self.h6, 0.5)
 
-        self.w7 = tf.Variable(tf.truncated_normal(shape=[200, 10], mean=0, stddev=0.1))
+        self.w7 = tf.Variable(tf.truncated_normal(shape=[84, 10], mean=0, stddev=0.1))
         self.b7 = tf.Variable(tf.zeros(10))
         self.h7 = tf.matmul(self.h6, self.w7) + self.b7
 
