@@ -22,6 +22,7 @@ class LeNet5:
         self.conv1_b = tf.Variable(tf.zeros(6))
         self.conv1 = tf.nn.relu(
             tf.nn.conv2d(self.x, self.conv1_f, strides=[1, 1, 1, 1], padding='VALID') + self.conv1_b)
+        self.conv1 = tf.nn.dropout(self.conv1, self.prob)
         print(self.conv1.shape)
 
         self.pool2 = tf.nn.max_pool(self.conv1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')

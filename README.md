@@ -134,11 +134,34 @@ otherwise 几乎收敛极慢
 ### network v3: convolutional neural networks
 
 LeNet5:
-`commit id: 7cbf8224b0ee81b9e579ff5b2f7db4362b1a797b`
+
 ```
+commit id: 7cbf8224b0ee81b9e579ff5b2f7db4362b1a797b
 EPOCH 50 ...
 Validation error rate = 0.00820, Validation_loss = 254.92041
 -> Test error rate = 0.00860
+```
+
+testing dropout:
+
+`commit id: 35bf19d0ae5dd84c94cd0ecd076eb7866d834b5b`
+- dropout 0.9
+```
+EPOCH 86 ...
+Validation error rate = 0.00780, Validation_loss = 217.97322
+-> Test error rate = 0.00780, test_loss = 361.28583
+```
+- dropout 0.8
+```
+EPOCH 50 ...
+Validation error rate = 0.00600, Validation_loss = 112.12317
+-> Test error rate = 0.00610, test_loss = 231.53174
+```
+- dropout 0.7
+```
+EPOCH 71 ...
+Validation error rate = 0.00600, Validation_loss = 116.65848
+-> Test error rate = 0.00640, test_loss = 239.07408
 ```
 
 
